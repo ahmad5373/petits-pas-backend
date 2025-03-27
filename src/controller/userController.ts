@@ -41,6 +41,32 @@ export const registerUser = async (req: Request, res: Response): Promise<any> =>
     }
 };
 
+
+export const adminLogin = async (req: Request, res: Response): Promise<any> => {
+    try {
+        const { email, password } = req.body;
+
+        const existingUser = await findUserByEmail(email);
+        if (!existingUser) {
+            return sendResponse(res, 404, "user not found");
+        }
+        if (existingUser.role !=='admin') {
+            return sendResponse(res, 404, "user not found");
+        }
+        if (!await bcrypt.compare(password, existingUser.password)) {
+            return sendResponse(res, 401, "Invalid credentials");
+        }
+        const { password: _, ...userWithoutPassword } = existingUser.toObject();
+        const userobj = {
+            ...userWithoutPassword,
+            access_token: createJWT(existingUser?._id, existingUser?.role)
+        }
+        return sendResponse(res, 200, "Login Successful", [], { user: userobj });
+    } catch (error: any) {
+        return sendResponse(res, 500, `Error during login: ${error?.message}`);
+    }
+}
+
 export const login = async (req: Request, res: Response): Promise<any> => {
     try {
         const { email, password } = req.body;
