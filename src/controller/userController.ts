@@ -51,7 +51,7 @@ export const adminLogin = async (req: Request, res: Response): Promise<any> => {
             return sendResponse(res, 404, "user not found");
         }
         if (existingUser.role !=='admin') {
-            return sendResponse(res, 404, "user not found");
+            return sendResponse(res, 404, `Admin not exist with ${email} please create new account first`);
         }
         if (!await bcrypt.compare(password, existingUser.password)) {
             return sendResponse(res, 401, "Invalid credentials");
@@ -66,6 +66,20 @@ export const adminLogin = async (req: Request, res: Response): Promise<any> => {
         return sendResponse(res, 500, `Error during login: ${error?.message}`);
     }
 }
+
+
+export const getAdmin = async (req: AuthRequest, res: Response): Promise<any> => {
+    try {
+        const user_id = req?.user?.user_id
+        const adminData = await User.findOne({_id: user_id, role: 'admin'});
+        if (!adminData) {
+            return sendResponse(res, 401, `Admin not exist`);
+        }
+        return sendResponse(res, 200, "admin details fetch successful", [], adminData);
+    } catch (error:any) {
+        return sendResponse(res, 500, `Error during fetching admin: ${error?.message}`);
+    }
+};
 
 export const login = async (req: Request, res: Response): Promise<any> => {
     try {
