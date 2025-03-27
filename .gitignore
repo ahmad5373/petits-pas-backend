@@ -1,0 +1,5 @@
+node_modules
+.env
+.node
+# src/public/assets/backend
+# build
