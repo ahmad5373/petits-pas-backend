@@ -1,33 +1,44 @@
 import multer from 'multer';
 import path from 'path';
+import fs from 'fs';
 
-// Configure storage
+// Configure multer for file uploads
 const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, './uploads'); // Save files in 'uploads' folder
+    destination: function (req, file, cb) {
+      const uploadDir = path.join(__dirname, 'uploads');
+      // Ensure upload directory exists
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+      cb(null, uploadDir);
     },
-    filename: function(req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname)); // Unique filename
+    filename: function (req, file, cb) {
+      console.log('file in storage:>> ', file);
+      // Create unique filename
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, uniqueSuffix + path.extname(file.originalname));
     }
-});
+  });
 
-// File filter for videos
+
+// File filter to only accept video files
 const fileFilter = (req: any, file: Express.Multer.File, cb: any) => {
-    const allowedTypes = ['video/mp4', 'video/mov', 'video/avi'];
-    if (allowedTypes.includes(file.mimetype)) {
-        cb(null, true);
+  console.log('file :>> ', file);
+    // Accept video files only
+    if (file.mimetype.startsWith('video/')) {
+      cb(null, true);
     } else {
-        cb(new Error('Unsupported file format'), false);
+      cb(new Error('Only video files are allowed!'), false);
     }
-};
+  };
 
-// Configure multer
-const upload = multer({
-    storage: storage,
+
+const upload = multer({ 
+    storage: storage, 
+    fileFilter: fileFilter,
     limits: {
-        fileSize: 1024 * 1024 * 100 // 100MB limit
-    },
-    fileFilter: fileFilter
-});
+      fileSize: 500 * 1024 * 1024, // 500MB limit (adjust as needed)
+    }
+  });
 
 export { upload };
