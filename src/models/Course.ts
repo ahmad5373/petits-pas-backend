@@ -25,7 +25,7 @@ const courseSchema = new Schema<ICourse>({
         },
     ],
     status: { type: String, default: 'pending',  enum: ['pending', 'active', 'completed'],},
-    category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
+    category: { type: Schema.Types.ObjectId, ref: "Category"},
 });
 
 export const Course = mongoose.model<ICourse>("Course", courseSchema);
