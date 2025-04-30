@@ -24,7 +24,7 @@ const courseSchema = new Schema<ICourse>({
             videoUrl: { type: String, required: true },
         },
     ],
-    status: { type: String, default: 'pending',  enum: ['pending', 'active', 'completed'],},
+    status: { type: String, default: 'active',  enum: ['active', 'inactive']},
     category: { type: Schema.Types.ObjectId, ref: "Category"},
 });
 
