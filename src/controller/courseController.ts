@@ -107,8 +107,7 @@ export const checkUploadStatus = (req: Request, res: Response): void => {
   }
   const status = uploadStatuses.get(jobId);
   if (status) {
-    // res.json(status);
-    sendResponse(res, 200, 'Uploaded video successfully.',[], { status });
+    res.json(status);
   } else {
     sendResponse(res, 404, 'Job not found');
   }
