@@ -26,6 +26,6 @@ const courseSchema = new Schema<ICourse>({
     ],
     status: { type: String, default: 'active',  enum: ['active', 'inactive']},
     category: { type: Schema.Types.ObjectId, ref: "Category"},
-});
+}, {timestamps: true});
 
 export const Course = mongoose.model<ICourse>("Course", courseSchema);
