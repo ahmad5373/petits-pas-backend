@@ -247,7 +247,7 @@ export const getAllCourses = async (req: Request, res: Response): Promise<any> =
         const name = req.query.name as string || '';
 
         const query: { [key: string]: any } = {};
-        if (status) query["status"] = { $regex: status, $options: "i" }   // Case-insensitive search
+        if (status) query["status"] = status  
         if (name) query["title"] = { $regex: name, $options: "i" }   // Case-insensitive search
 
         const totalResults = await Course.countDocuments(query);
