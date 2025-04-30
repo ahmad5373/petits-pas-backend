@@ -244,12 +244,10 @@ export const getAllCourses = async (req: Request, res: Response): Promise<any> =
         const page = parseInt(req.query.page as string, 10) || 1;
         const limit = parseInt(req.query.limit as string, 10) || 5;
         const status = req.query.status as string || '';
-        const name = req.query.name as string || '';
-
+        const title = req.query.title as string || '';
         const query: { [key: string]: any } = {};
         if (status) query["status"] = status  
-        if (name) query["title"] = { $regex: name, $options: "i" }   // Case-insensitive search
-
+        if (title) query["title"] = { $regex: title, $options: "i" }   // Case-insensitive search
         const totalResults = await Course.countDocuments(query);
         const searchResults = await Course.find(query)
             .skip((page - 1) * limit)
