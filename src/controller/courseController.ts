@@ -126,14 +126,9 @@ export const checkUploadStatus = (req: Request, res: Response): void => {
     }
 };
 
-
-/**
- * Controller to update video details on Vimeo
- */
 export const updateVideo = async(req: Request, res: Response): Promise<any> => {
     try {
       const { videoId } = req.params;
-      
       client.request({
         method: 'PATCH',
         path: `/videos/${videoId}`,
@@ -149,9 +144,6 @@ export const updateVideo = async(req: Request, res: Response): Promise<any> => {
     }
   };
   
-  /**
-   * Controller to delete a video from Vimeo
-   */
   export const deleteVideo = async(req: Request, res: Response): Promise<any> => {
     try {
       const { videoId } = req.params;
@@ -169,50 +161,6 @@ export const updateVideo = async(req: Request, res: Response): Promise<any> => {
       return sendResponse(res, 500, `Error deleting video: ${error.message}`);
     }
   };
-
-// export const updateVideo = async(req: Request, res: Response): Promise<any> => {
-//     try {
-//       const { videoId } = req.params;
-      
-//       client.request({
-//               method: 'PATCH',
-//               path: `/videos/${req.params.videoId}`,
-//               body: req.body // Can include name, description, privacy settings, etc.
-//             }, (error, body, statusCode, headers) => {
-//               if (error) {
-//                 return sendResponse(res, 400, `There is error while getting video: ${error.message}`);
-//               }
-//               return sendResponse(res, 200, 'Video updated successfully', body);
-//             });
-//         //   });
-
-//     //   client.request({
-//     //     method: 'GET',
-//     //     path: `/videos/${videoId}`
-//     //   }, (error, body, statusCode, headers) => {
-//     //     if (error) {
-//     //       return sendResponse(res, 400, `There is error while getting video: ${error.message}`);
-//     //     }
-        
-//     //     return sendResponse(res, 200, 'Video details fetched successfully', body);
-//     //   });
-//     } catch (error: any) {
-//         return sendResponse(res, 500, `Error updating video: ${error.message}`);
-//     }
-// };
-
-//   // Delete a video
-//   app.delete('/api/videos/:video_id', (req, res) => {
-//     client.request({
-//       method: 'DELETE',
-//       path: `/videos/${req.params.video_id}`
-//     }, (error, body, statusCode, headers) => {
-//       if (error) {
-//         return res.status(statusCode).json({ error: error.message });
-//       }
-//       res.status(204).json({ message: 'Video deleted successfully' });
-//     });
-//   });
 
 export const createCourse = async (req: Request, res: Response):Promise<any> => {
     try {
