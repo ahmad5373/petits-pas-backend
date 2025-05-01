@@ -9,7 +9,6 @@ console.log('process.env.VIMEO_TOKEN :>> ', process.env.VIMEO_TOKEN);
 console.log('process.env.VIMEO_CLIENT_IDENTIFIER :>> ', process.env.VIMEO_CLIENT_IDENTIFIER);
 console.log('process.env.VIMEO_CLIENT_SECRETS :>> ', process.env.VIMEO_CLIENT_SECRETS);
 
-// Define interfaces for type safety
 interface UploadStatus {
   jobId: string;
   status: 'processing' | 'complete' | 'failed';
@@ -21,7 +20,6 @@ interface UploadStatus {
 // Create a map to store upload statuses
 const uploadStatuses = new Map<string, UploadStatus>();
 
-// Initialize Vimeo client
 const client = new Vimeo(
   process.env.VIMEO_CLIENT_IDENTIFIER || '',
   process.env.VIMEO_CLIENT_SECRETS || '',
@@ -30,7 +28,6 @@ const client = new Vimeo(
 
 export const uploadVimeoVideo = async (req: Request, res: Response): Promise<void> => {
   try {
-    // console.log('req.file :>> ', req.file);
     if (!req.file) {
       sendResponse(res, 400, 'No video file provided');
       return;
@@ -68,8 +65,6 @@ export const uploadVimeoVideo = async (req: Request, res: Response): Promise<voi
         fs.unlink(filePath, (err) => {
           if (err) console.error('Error deleting temp file:', err);
         });
-
-        console.log('Upload complete:', uri);
       },
       function (bytes_uploaded: number, bytes_total: number) {
         const percentage = (bytes_uploaded / bytes_total * 100).toFixed(2);
@@ -87,7 +82,6 @@ export const uploadVimeoVideo = async (req: Request, res: Response): Promise<voi
           status.error = error.message;
           uploadStatuses.set(jobId, status);
         }
-
         fs.unlink(filePath, (err) => {
           if (err) console.error('Error deleting temp file:', err);
         });
