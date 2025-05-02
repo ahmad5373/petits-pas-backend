@@ -12,6 +12,7 @@ import policyRoutes from './routes/policyRoutes';
 import courseRoutes from './routes/courseRoutes';
 import faqsRoutes from './routes/faqsRoutes';
 import contactUsRoutes from './routes/contactUsRoutes';
+import appVideoRoutes from './routes/appVideosRoutes';
 
 
 app.use(cors())
@@ -42,6 +43,7 @@ app.use('/category', categoryRoutes);
 app.use('/reviews', reviewRoutes);
 app.use('/policies', policyRoutes);
 app.use('/course', courseRoutes);
+app.use('/videos',appVideoRoutes);
 app.use('/faqs', faqsRoutes);
 app.use('/contact-us', contactUsRoutes);
 

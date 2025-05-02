@@ -103,3 +103,22 @@ export const addReviewValidation = [
         .isString()
         .withMessage("Comment must be a string")
 ];
+
+
+
+export const AddAppVideoValidation = [
+    // body("userId").notEmpty().withMessage("User Id is required"),
+    body("thumbnail").notEmpty().withMessage("Thumbnail  is required"),
+    body("title").notEmpty().withMessage("Video Title  is required"),
+    body("videoUrl").notEmpty().withMessage("Please Upload  Video Again"),
+    body("category").notEmpty().withMessage("Please Select one category"),
+    // body("quantity").notEmpty().isNumeric().withMessage("quantity is required and must be a number"),
+    // body("shippingAddress")
+    //     .isObject().withMessage("Shipping address must be an object").bail()
+    //     .custom((value) => {
+    //         if (!value.country || !value.address) {
+    //             throw new Error("Country and area address is required");
+    //         }
+    //         return true;
+    //     }),
+];

@@ -11,7 +11,6 @@ interface ICourse extends Document {
     introduction: string;
     content: IVideo[];
     status: 'inActive' | 'active';
-    category: mongoose.Types.ObjectId; // Reference to Category
 }
 
 const courseSchema = new Schema<ICourse>({
@@ -25,7 +24,6 @@ const courseSchema = new Schema<ICourse>({
         },
     ],
     status: { type: String, default: 'active',  enum: ['active', 'inActive']},
-    category: { type: Schema.Types.ObjectId, ref: "Category"},
 }, {timestamps: true});
 
 export const Course = mongoose.model<ICourse>("Course", courseSchema);
