@@ -1,6 +1,13 @@
 import { Request, Response } from "express";
 import { sendResponse } from "../utility/apiResponse";
 import { AppVideos } from "../models/AppVideo";
+import { Vimeo } from "vimeo";
+
+const client = new Vimeo(
+  process.env.VIMEO_CLIENT_IDENTIFIER || '',
+  process.env.VIMEO_CLIENT_SECRETS || '',
+  process.env.VIMEO_TOKEN || ''
+);
 
 export const createAppVideo = async (req: Request, res: Response):Promise<any> => {
     try {
@@ -80,14 +87,43 @@ export const updateAppVideo = async (req: Request, res: Response): Promise<any> 
 export const deleteAppVideo = async (req: Request, res: Response): Promise<any> => {
     try {
         const { videoId } = req.params;
-        const appVideos = await AppVideos.findOne({ _id: videoId });
-        if (!appVideos) {
+        const appVideo = await AppVideos.findById(videoId);
+        if (!appVideo) {
             return sendResponse(res, 404, "App Video not found");
         }
-        await appVideos.deleteOne({ _id: videoId });
+        const videoUrl = appVideo.videoUrl;
+        const vimeoIdMatch = videoUrl.match(/^(\d+)$/);
+        if (vimeoIdMatch && vimeoIdMatch[1]) {
+            const vimeoId = vimeoIdMatch[1];
+            const deleteFromVimeo = () => {
+                return new Promise((resolve, reject) => {
+                    client.request({
+                        method: 'DELETE',
+                        path: `/videos/${vimeoId}`
+                    }, (error: any) => {
+                        if (error) {
+                            console.error(`Error deleting video ${vimeoId} from Vimeo:`, error);
+                            resolve(false);
+                        } else {
+                            console.log("Vimeo delete successful")
+                            resolve(true);
+                        }
+                    });
+                });
+            };
+            try {
+                await deleteFromVimeo();
+            } catch (vimeoError) {
+                console.error("Vimeo deletion error:", vimeoError);
+            }
+        } else {
+            console.log("Not a valid Vimeo ID, skipping Vimeo deletion");
+        }
+        
+        await AppVideos.deleteOne({ _id: videoId });
         return sendResponse(res, 200, "App Video deleted successfully");
     } catch (error: any) {
-        return sendResponse(res, 500, `Error deleting App Video: ${error.message}`);
+        console.error("Error deleting app video:", error);
+        return sendResponse(res, 500, `Error deleting App Video: ${error.message || 'Unknown error'}`);
     }
-
 }

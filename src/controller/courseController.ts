@@ -45,7 +45,7 @@ export const uploadVimeoVideo = async (req: Request, res: Response): Promise<voi
     };
     uploadStatuses.set(jobId, uploadStatus);
     // Immediately return the job ID so frontend can track status
-    sendResponse(res, 202, 'Upload started',[], { jobId });
+    sendResponse(res, 202, 'Upload started', [], { jobId });
     client.upload(
       filePath,
       {
@@ -107,146 +107,170 @@ export const checkUploadStatus = (req: Request, res: Response): void => {
   }
 };
 
-    export const FetchVideoDetails = async(req: Request, res: Response): Promise<any> => {
-    try {
-      const { videoId } = req.params;
-      
-      client.request({
-        method: 'GET',
-        path: `/videos/${videoId}`
-      }, (error, body, statusCode, headers) => {
-        if (error) {
-          return sendResponse(res, 400, `There is error while getting video: ${error.message}`);
-        }
-        
-        return sendResponse(res, 200, 'Video details fetched successfully', body);
-      });
-    } catch (error: any) {
-        return sendResponse(res, 500, `Error fetching video: ${error.message}`);
-    }
+export const FetchVideoDetails = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { videoId } = req.params;
+
+    client.request({
+      method: 'GET',
+      path: `/videos/${videoId}`
+    }, (error, body, statusCode, headers) => {
+      if (error) {
+        return sendResponse(res, 400, `There is error while getting video: ${error.message}`);
+      }
+
+      return sendResponse(res, 200, 'Video details fetched successfully', body);
+    });
+  } catch (error: any) {
+    return sendResponse(res, 500, `Error fetching video: ${error.message}`);
+  }
 };
 
-export const updateVideo = async(req: Request, res: Response): Promise<any> => {
-    try {
-      const { videoId } = req.params;
-      client.request({
-        method: 'PATCH',
-        path: `/videos/${videoId}`,
-        query: req.body // Can include name, description, privacy settings, etc.
-      }, (error, body, statusCode, headers) => {
-        if (error) {
-          return sendResponse(res, 400, `Error updating video: ${error.message}`);
-        }
-        return sendResponse(res, 200, 'Video updated successfully', body);
-      });
-    } catch (error: any) {
-      return sendResponse(res, 500, `Error updating video: ${error.message}`);
-    }
-  };
-  
-  export const deleteVideo = async(req: Request, res: Response): Promise<any> => {
-    try {
-      const { videoId } = req.params;
-      
-      client.request({
-        method: 'DELETE',
-        path: `/videos/${videoId}`
-      }, (error: any) => {
-        if (error) {
-          return sendResponse(res, 400, `Error deleting video: ${error.message}`);
-        }
-        return sendResponse(res, 200, 'Video deleted successfully');
-      });
-    } catch (error: any) {
-      return sendResponse(res, 500, `Error deleting video: ${error.message}`);
-    }
-  };
+export const updateVideo = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { videoId } = req.params;
+    client.request({
+      method: 'PATCH',
+      path: `/videos/${videoId}`,
+      query: req.body // Can include name, description, privacy settings, etc.
+    }, (error, body, statusCode, headers) => {
+      if (error) {
+        return sendResponse(res, 400, `Error updating video: ${error.message}`);
+      }
+      return sendResponse(res, 200, 'Video updated successfully', body);
+    });
+  } catch (error: any) {
+    return sendResponse(res, 500, `Error updating video: ${error.message}`);
+  }
+};
 
-export const createCourse = async (req: Request, res: Response):Promise<any> => {
-    try {
-        const { title, image, introduction, content, category } = req.body;
-        
-        const newCourse = new Course({
-            title,
-            image,
-            introduction,
-            content, // This contains the uploaded Vimeo video URLs
-            category
-        });
-        await newCourse.save();
-        return sendResponse(res, 201, "Course created successfully.", [], {course: newCourse});
-    } catch (error: any) {
-        return sendResponse(res, 500, `Error created course: ${error.message}`);
-    }
+export const deleteVideo = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { videoId } = req.params;
+
+    client.request({
+      method: 'DELETE',
+      path: `/videos/${videoId}`
+    }, (error: any) => {
+      if (error) {
+        return sendResponse(res, 400, `Error deleting video: ${error.message}`);
+      }
+      return sendResponse(res, 200, 'Video deleted successfully');
+    });
+  } catch (error: any) {
+    return sendResponse(res, 500, `Error deleting video: ${error.message}`);
+  }
+};
+
+export const createCourse = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { title, image, introduction, content, category } = req.body;
+
+    const newCourse = new Course({
+      title,
+      image,
+      introduction,
+      content, // This contains the uploaded Vimeo video URLs
+      category
+    });
+    await newCourse.save();
+    return sendResponse(res, 201, "Course created successfully.", [], { course: newCourse });
+  } catch (error: any) {
+    return sendResponse(res, 500, `Error created course: ${error.message}`);
+  }
 };
 
 
 export const getAllCourses = async (req: Request, res: Response): Promise<any> => {
-    try {
-        const page = parseInt(req.query.page as string, 10) || 1;
-        const limit = parseInt(req.query.limit as string, 10) || 5;
-        const status = req.query.status as string || '';
-        const title = req.query.title as string || '';
-        const query: { [key: string]: any } = {};
-        if (status) query["status"] = status  
-        if (title) query["title"] = { $regex: title, $options: "i" }   // Case-insensitive search
-        const totalResults = await Course.countDocuments(query);
-        const searchResults = await Course.find(query)
-            .skip((page - 1) * limit)
-            .limit(limit);
+  try {
+    const page = parseInt(req.query.page as string, 10) || 1;
+    const limit = parseInt(req.query.limit as string, 10) || 5;
+    const status = req.query.status as string || '';
+    const title = req.query.title as string || '';
+    const query: { [key: string]: any } = {};
+    if (status) query["status"] = status
+    if (title) query["title"] = { $regex: title, $options: "i" }   // Case-insensitive search
+    const totalResults = await Course.countDocuments(query);
+    const searchResults = await Course.find(query)
+      .skip((page - 1) * limit)
+      .limit(limit);
 
-        const pagination = {
-            currentPage: page,
-            totalPages: Math.ceil(totalResults / limit),
-            pageSize: limit,
-            totalResults,
-        };
+    const pagination = {
+      currentPage: page,
+      totalPages: Math.ceil(totalResults / limit),
+      pageSize: limit,
+      totalResults,
+    };
 
-        return sendResponse(res, 200, "Courses fetched successfully", [], { pagination, results: searchResults });
-    } catch (error: any) {
-        console.error("Error fetching Courses:", error);
-        return sendResponse(res, 500, `Error fetching Courses: ${error.message}`);
-    }
+    return sendResponse(res, 200, "Courses fetched successfully", [], { pagination, results: searchResults });
+  } catch (error: any) {
+    console.error("Error fetching Courses:", error);
+    return sendResponse(res, 500, `Error fetching Courses: ${error.message}`);
+  }
 };
 
 export const getSingleCourse = async (req: Request, res: Response): Promise<any> => {
-    try {
-        const { CourseId } = req.params;
-        const course = await Course.findOne({ _id: CourseId });
-        if (!course) {
-            return sendResponse(res, 404, "Course not found");
-        }
-        return sendResponse(res, 200, "Course details fetch successfully.", [], course);
-    } catch (error: any) {
-        return sendResponse(res, 500, `Error fetching Courses: ${error.message}`);
+  try {
+    const { CourseId } = req.params;
+    const course = await Course.findOne({ _id: CourseId });
+    if (!course) {
+      return sendResponse(res, 404, "Course not found");
     }
+    return sendResponse(res, 200, "Course details fetch successfully.", [], course);
+  } catch (error: any) {
+    return sendResponse(res, 500, `Error fetching Courses: ${error.message}`);
+  }
 }
 
 export const updateCourse = async (req: Request, res: Response): Promise<any> => {
-    try {
-        const { CourseId } = req.params;
-        const existingCourse = await Course.findById(CourseId);
-        if (!existingCourse) {
-            return sendResponse(res, 404, "Course not found");
-        }       
-         const updatedCourse = await Course.findByIdAndUpdate( CourseId, req.body, { new: true, runValidators: true });
-        return sendResponse(res, 200, "Course updated successfully", [], updatedCourse);
-    } catch (error: any) {
-        return sendResponse(res, 500, `Error while updating Course: ${error.message}`);
+  try {
+    const { CourseId } = req.params;
+    const existingCourse = await Course.findById(CourseId);
+    if (!existingCourse) {
+      return sendResponse(res, 404, "Course not found");
     }
+    const updatedCourse = await Course.findByIdAndUpdate(CourseId, req.body, { new: true, runValidators: true });
+    return sendResponse(res, 200, "Course updated successfully", [], updatedCourse);
+  } catch (error: any) {
+    return sendResponse(res, 500, `Error while updating Course: ${error.message}`);
+  }
 }
 
 export const deleteCourse = async (req: Request, res: Response): Promise<any> => {
-    try {
-        const { CourseId } = req.params;
-        const course = await Course.findOne({ _id: CourseId });
-        if (!course) {
-            return sendResponse(res, 404, "Course not found");
-        }
-        await course.deleteOne({ _id: CourseId });
-        return sendResponse(res, 200, "Course deleted successfully");
-    } catch (error: any) {
-        return sendResponse(res, 500, `Error deleting Course: ${error.message}`);
+  try {
+    const { CourseId } = req.params;
+    const course = await Course.findById(CourseId);
+    if (!course) {
+      return sendResponse(res, 404, "Course not found");
     }
-
+    if (course?.content && course?.content.length > 0) {
+      const deleteVideoFromVimeo = (videoUrl: string) => {
+        return new Promise((resolve, reject) => {
+          client.request({
+            method: 'DELETE',
+            path: `/videos/${videoUrl}`
+          }, (error: any) => {
+            if (error) {
+              console.error(`Error deleting video ${videoUrl} from Vimeo:`, error);
+              resolve(false);
+            } else {
+              resolve(true);
+            }
+          });
+        });
+      };
+      const deletionPromises = course?.content?.map(video => {
+        if (video.videoUrl) {
+          return deleteVideoFromVimeo(video.videoUrl);
+        }
+        return Promise.resolve(true);
+      });
+      await Promise.all(deletionPromises);
+    }
+    await Course.deleteOne({ _id: CourseId });
+    return sendResponse(res, 200, "Course and associated videos deleted successfully");
+  } catch (error: any) {
+    console.error("Error deleting course:", error);
+    return sendResponse(res, 500, `Error deleting Course: ${error.message || 'Unknown error'}`);
+  }
 }
