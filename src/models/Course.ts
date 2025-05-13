@@ -3,6 +3,8 @@ import mongoose, { Schema, Document } from "mongoose";
 interface IVideo {
     title: string;
     videoUrl: string; // Vimeo video link
+    context: string;
+    documentUrl: string;
 }
 
 interface ICourse extends Document {
@@ -21,6 +23,8 @@ const courseSchema = new Schema<ICourse>({
         {
             title: { type: String, required: true },
             videoUrl: { type: String, required: true },
+            context: { type: String},
+            documentUrl: { type: String},
         },
     ],
     status: { type: String, default: 'active',  enum: ['active', 'inActive']},

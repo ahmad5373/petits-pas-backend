@@ -170,7 +170,7 @@ export const createCourse = async (req: Request, res: Response): Promise<any> =>
       title,
       image,
       introduction,
-      content, // This contains the uploaded Vimeo video URLs
+      content,
       category
     });
     await newCourse.save();
