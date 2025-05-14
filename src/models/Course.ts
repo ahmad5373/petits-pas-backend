@@ -13,6 +13,7 @@ interface ICourse extends Document {
     introduction: string;
     content: IVideo[];
     status: 'inActive' | 'active';
+    isComplete: boolean;
 }
 
 const courseSchema = new Schema<ICourse>({
@@ -28,6 +29,7 @@ const courseSchema = new Schema<ICourse>({
         },
     ],
     status: { type: String, default: 'active',  enum: ['active', 'inActive']},
+    isComplete : { type: Boolean, default: false}
 }, {timestamps: true});
 
 export const Course = mongoose.model<ICourse>("Course", courseSchema);
