@@ -133,6 +133,20 @@ export const getAllUsers = async (req: Request, res: Response): Promise<any> => 
     }
 };
 
+
+export const getLoggedInUser = async (req: AuthRequest, res: Response): Promise<any> => {
+    try {
+        const user_id = req?.user?.user_id
+        const user = await User.findOne({_id: user_id, role: 'user'});
+        if (!user) {
+            return sendResponse(res, 401, `User not exist`);
+        }
+        return sendResponse(res, 200, "User details fetch successful", [], user);
+    } catch (error:any) {
+        return sendResponse(res, 500, `Error during fetching User: ${error?.message}`);
+    }
+};
+
 export const getSingleUser = async (req: Request, res: Response): Promise<any> => {
     try {
         const { userId } = req.params;

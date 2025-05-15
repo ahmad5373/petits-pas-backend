@@ -13,6 +13,7 @@ import courseRoutes from './routes/courseRoutes';
 import faqsRoutes from './routes/faqsRoutes';
 import contactUsRoutes from './routes/contactUsRoutes';
 import appVideoRoutes from './routes/appVideosRoutes';
+import couresProgressRoutes from './routes/courseProgressRoutes';
 
 
 app.use(cors())
@@ -46,6 +47,7 @@ app.use('/course', courseRoutes);
 app.use('/videos',appVideoRoutes);
 app.use('/faqs', faqsRoutes);
 app.use('/contact-us', contactUsRoutes);
+app.use('/progress', couresProgressRoutes);
 
 app.use(errorHandler);
 

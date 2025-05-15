@@ -5,6 +5,7 @@ import { sendResponse } from "../utility/apiResponse";
 
 import fs from 'fs';
 import { Vimeo } from 'vimeo';
+import { CourseProgress } from "../models/CourseProgress";
 console.log('process.env.VIMEO_TOKEN :>> ', process.env.VIMEO_TOKEN);
 console.log('process.env.VIMEO_CLIENT_IDENTIFIER :>> ', process.env.VIMEO_CLIENT_IDENTIFIER);
 console.log('process.env.VIMEO_CLIENT_SECRETS :>> ', process.env.VIMEO_CLIENT_SECRETS);
@@ -180,16 +181,39 @@ export const createCourse = async (req: Request, res: Response): Promise<any> =>
   }
 };
 
+export const startCourseForUser = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { userId, courseId } = req.body;
+const course = await Course.findById(courseId);
+const videoProgress = course?.content.map(video => ({
+  videoId: video?.videoUrl,
+  completed: false
+}));
+
+await CourseProgress.create({
+  userId,
+  courseId,
+  videoProgress
+});
+    return sendResponse(res, 201, "Course started.",);
+  } catch (error: any) {
+    return sendResponse(res, 500, `Error starting course: ${error.message}`);
+  }
+};
+
 
 export const getAllCourses = async (req: Request, res: Response): Promise<any> => {
   try {
     const page = parseInt(req.query.page as string, 10) || 1;
-    const limit = parseInt(req.query.limit as string, 10) || 5;
+    const limit = parseInt(req.query.limit as string, 10) || 50;
+    const isCompleteQuery = req.query.isComplete;
+    const isComplete = typeof isCompleteQuery === 'string' ? isCompleteQuery === 'true' : undefined;
     const status = req.query.status as string || '';
     const title = req.query.title as string || '';
     const query: { [key: string]: any } = {};
     if (status) query["status"] = status
     if (title) query["title"] = { $regex: title, $options: "i" }   // Case-insensitive search
+    if (typeof isComplete === 'boolean') query["isComplete"] = isComplete;
     const totalResults = await Course.countDocuments(query);
     const searchResults = await Course.find(query)
       .skip((page - 1) * limit)
