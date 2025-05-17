@@ -10,7 +10,7 @@ interface ICourseProgress extends Document {
   courseId: mongoose.Types.ObjectId;
   videoProgress: IVideoProgress[];
   isComplete: boolean;
-  progress: number; // 0 to 100
+  progress: number;
 }
 
 const courseProgressSchema = new Schema<ICourseProgress>({
