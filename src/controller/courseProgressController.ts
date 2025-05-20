@@ -92,7 +92,7 @@ export const getUserCourseProgress = async (req: AuthRequest, res: Response): Pr
             });
             const contentWithProgress = course.content.map(video => ({
                 ...video,
-                completed: videoProgressMap[video.videoUrl] || false
+                isComplete: videoProgressMap[video.videoUrl] || false
             }));
             return sendResponse(res, 200, "Single course with progress", [], {
                 ...course,
