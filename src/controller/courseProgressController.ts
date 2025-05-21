@@ -101,18 +101,22 @@ export const getUserCourseProgress = async (req: AuthRequest, res: Response): Pr
                 isComplete: progress.isComplete || false
             });
         }
+        const courseProgressQuery: any = { userId};
+        if (typeof isComplete === 'boolean') courseProgressQuery.isComplete = isComplete;
         // === User's all courses with progress ===
-        const progressDocs = await CourseProgress.find({ userId });
+        const progressDocs = await CourseProgress.find(courseProgressQuery);
         if (progressDocs.length === 0) {
-            return sendResponse(res, 404, "No courses assigned to this user");
+            return sendResponse(res, 200, "All assigned courses with progress", [], progressDocs);
         }
         const courseIds = progressDocs.map(p => p.courseId);
         const courseQuery: any = { _id: { $in: courseIds } };
         if (title) courseQuery.title = { $regex: title, $options: "i" }; // Case-insensitive
-        if (typeof isComplete === 'boolean') courseQuery.isComplete = isComplete;
         const courses = await Course.find(courseQuery).lean();
+
+        const filteredCourseIds = new Set(courses.map(course => course._id.toString()));
+        const filteredProgressDocs = progressDocs.filter(p => filteredCourseIds.has(p.courseId.toString()))
         const progressMap: Record<string, any> = {};
-        progressDocs.forEach(p => {
+        filteredProgressDocs.forEach(p => {
             progressMap[p.courseId.toString()] = p;
         });
         const mergedCourses = courses.map(course => {
@@ -135,7 +139,9 @@ export const getUserCourseProgress = async (req: AuthRequest, res: Response): Pr
                 isComplete: progress?.isComplete || false
             };
         });
-        return sendResponse(res, 200, "All assigned courses with progress", [], mergedCourses);
+        //  const overAllProgress = filteredProgressDocs.reduce((acc, p) => acc + (p.progress || 0),0 ) / filteredProgressDocs.length;
+        // return sendResponse(res, 200, "All assigned courses with progress", [], {...mergedCourses, overAllProgress});
+        return sendResponse(res, 200, "All assigned courses with progress", [], mergedCourses,);
     } catch (error: any) {
         return sendResponse(res, 500, `Error fetching course progress: ${error.message}`);
     }
