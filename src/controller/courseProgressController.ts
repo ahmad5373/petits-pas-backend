@@ -3,15 +3,13 @@ import { Course } from "../models/Course";
 import { CourseProgress } from "../models/CourseProgress";
 import { sendResponse } from "../utility/apiResponse";
 
-
 interface AuthRequest extends Request {
     user?: { user_id: string; role: string };
 }
 
-
 export const initializeCourseProgress = async (req: AuthRequest, res: Response): Promise<any> => {
     try {
-        const userId = req?.user?.user_id; // ensure req.user is set via auth middleware
+        const userId = req?.user?.user_id;
         const { courseId } = req.body;
 
         const course = await Course.findById(courseId);
@@ -25,7 +23,6 @@ export const initializeCourseProgress = async (req: AuthRequest, res: Response):
                 videoId: video?.videoUrl,
                 completed: false,
             }));
-
         const progress = new CourseProgress({
             userId,
             courseId,
@@ -101,7 +98,7 @@ export const getUserCourseProgress = async (req: AuthRequest, res: Response): Pr
                 isComplete: progress.isComplete || false
             });
         }
-        const courseProgressQuery: any = { userId};
+        const courseProgressQuery: any = { userId };
         if (typeof isComplete === 'boolean') courseProgressQuery.isComplete = isComplete;
         // === User's all courses with progress ===
         const progressDocs = await CourseProgress.find(courseProgressQuery);
@@ -139,8 +136,6 @@ export const getUserCourseProgress = async (req: AuthRequest, res: Response): Pr
                 isComplete: progress?.isComplete || false
             };
         });
-        //  const overAllProgress = filteredProgressDocs.reduce((acc, p) => acc + (p.progress || 0),0 ) / filteredProgressDocs.length;
-        // return sendResponse(res, 200, "All assigned courses with progress", [], {...mergedCourses, overAllProgress});
         return sendResponse(res, 200, "All assigned courses with progress", [], mergedCourses,);
     } catch (error: any) {
         return sendResponse(res, 500, `Error fetching course progress: ${error.message}`);

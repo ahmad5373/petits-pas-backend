@@ -24,12 +24,12 @@ const courseSchema = new Schema<ICourse>({
         {
             title: { type: String, required: true },
             videoUrl: { type: String, required: true },
-            context: { type: String},
-            documentUrl: { type: String},
+            context: { type: String },
+            documentUrl: { type: String },
         },
     ],
-    status: { type: String, default: 'active',  enum: ['active', 'inActive']},
-    isComplete : { type: Boolean, default: false}
-}, {timestamps: true});
+    status: { type: String, default: 'active', enum: ['active', 'inActive'] },
+    isComplete: { type: Boolean, default: false }
+}, { timestamps: true });
 
 export const Course = mongoose.model<ICourse>("Course", courseSchema);
