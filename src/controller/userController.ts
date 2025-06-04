@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import OTP from "../models/Otp";
 import { sendMail } from "../middleware/sendMail";
-import { findUserByEmail, findUserByPhone } from "../middleware/authMiddleware";
+import { findUserByEmail } from "../middleware/authMiddleware";
 
 const hashPassword = async (password: string) => await bcrypt.hash(password, 10);
 
@@ -13,7 +13,6 @@ const createJWT = (user_id: any, role: string) => {
     const token = jwt.sign({ user_id: user_id, role: role }, `${process.env.JWT_SECRET}`);
     return token;
 }
-
 interface AuthRequest extends Request {
     user?: { user_id: string; role: string };
 }
@@ -50,7 +49,7 @@ export const adminLogin = async (req: Request, res: Response): Promise<any> => {
         if (!existingUser) {
             return sendResponse(res, 404, "user not found");
         }
-        if (existingUser.role !=='admin') {
+        if (existingUser.role !== 'admin') {
             return sendResponse(res, 404, `Admin not exist with ${email} please create new account first`);
         }
         if (!await bcrypt.compare(password, existingUser.password)) {
@@ -67,16 +66,15 @@ export const adminLogin = async (req: Request, res: Response): Promise<any> => {
     }
 }
 
-
 export const getAdmin = async (req: AuthRequest, res: Response): Promise<any> => {
     try {
         const user_id = req?.user?.user_id
-        const adminData = await User.findOne({_id: user_id, role: 'admin'});
+        const adminData = await User.findOne({ _id: user_id, role: 'admin' });
         if (!adminData) {
             return sendResponse(res, 401, `Admin not exist`);
         }
         return sendResponse(res, 200, "admin details fetch successful", [], adminData);
-    } catch (error:any) {
+    } catch (error: any) {
         return sendResponse(res, 500, `Error during fetching admin: ${error?.message}`);
     }
 };
@@ -97,7 +95,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
             ...userWithoutPassword,
             access_token: createJWT(existingUser?._id, existingUser?.role)
         }
-        return sendResponse(res, 200, "Login Successful", [], { user: userobj });
+        return sendResponse(res, 200, "Login Successful", [], userobj);
     } catch (error: any) {
         return sendResponse(res, 500, `Error during login: ${error?.message}`);
     }
@@ -137,12 +135,12 @@ export const getAllUsers = async (req: Request, res: Response): Promise<any> => 
 export const getLoggedInUser = async (req: AuthRequest, res: Response): Promise<any> => {
     try {
         const user_id = req?.user?.user_id
-        const user = await User.findOne({_id: user_id, role: 'user'});
+        const user = await User.findOne({ _id: user_id, role: 'user' });
         if (!user) {
             return sendResponse(res, 401, `User not exist`);
         }
         return sendResponse(res, 200, "User details fetch successful", [], user);
-    } catch (error:any) {
+    } catch (error: any) {
         return sendResponse(res, 500, `Error during fetching User: ${error?.message}`);
     }
 };
@@ -167,8 +165,8 @@ export const updateUser = async (req: AuthRequest, res: Response): Promise<any> 
         const existingUser = await User.findById(userId);
         if (!existingUser) {
             return sendResponse(res, 404, "User not found");
-        }       
-         const updatedUser = await User.findByIdAndUpdate( userId, req.body, { new: true, runValidators: true });
+        }
+        const updatedUser = await User.findByIdAndUpdate(userId, req.body, { new: true, runValidators: true });
         return sendResponse(res, 200, "User updated successfully", [], updatedUser);
     } catch (error: any) {
         return sendResponse(res, 500, `Error while updating user: ${error.message}`);
