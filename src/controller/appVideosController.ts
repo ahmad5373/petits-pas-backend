@@ -11,11 +11,12 @@ const client = new Vimeo(
 
 export const createAppVideo = async (req: Request, res: Response):Promise<any> => {
     try {
-        const { title, thumbnail, videoUrl, category } = req.body;
+        const { title, thumbnail, description, videoUrl, category } = req.body;
         
         const newAppVideo = new AppVideos({
             title,
             thumbnail,
+            description,
             videoUrl,
             category
         });

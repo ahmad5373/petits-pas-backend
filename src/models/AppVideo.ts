@@ -8,6 +8,7 @@ import mongoose, { Schema, Document } from "mongoose";
 interface IAppVideo extends Document {
     title: string;
     thumbnail: string;
+    description: string;
     videoUrl: string;
     status: 'inActive' | 'active';
     category: mongoose.Types.ObjectId; // Reference to Category
@@ -16,6 +17,7 @@ interface IAppVideo extends Document {
 const courseSchema = new Schema<IAppVideo>({
     title: { type: String, required: true },
     thumbnail: { type: String, required: true },
+    description: { type: String },
     videoUrl: { type: String, required: true },
     status: { type: String, default: 'active',  enum: ['active', 'inActive']},
     category: { type: Schema.Types.ObjectId, ref: "Category", required: true},
