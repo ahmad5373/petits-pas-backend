@@ -165,14 +165,13 @@ export const deleteVideo = async (req: Request, res: Response): Promise<any> => 
 
 export const createCourse = async (req: Request, res: Response): Promise<any> => {
   try {
-    const { title, image, introduction, content, category } = req.body;
+    const { title, image, introduction, content } = req.body;
 
     const newCourse = new Course({
       title,
       image,
       introduction,
       content,
-      category
     });
     await newCourse.save();
     return sendResponse(res, 201, "Course created successfully.", [], { course: newCourse });
